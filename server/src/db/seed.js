@@ -267,9 +267,7 @@ export async function runSeed(db, config) {
   }
 
   if (bootstrapAdminInfo) {
-    console.log(
-      `[seed] Cuenta Admin inicial configurada -> usuario: ${bootstrapAdminInfo.username} | clave: ${bootstrapAdminInfo.password}`
-    );
+    console.log(`[seed] Cuenta Administrador inicial sincronizada (${bootstrapAdminInfo.username}).`);
   }
 
   // 2. Seed demo categories and products ONLY when explicitly enabled (e.g. automated tests).

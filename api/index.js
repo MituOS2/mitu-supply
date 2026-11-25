@@ -25,12 +25,7 @@ async function getServer() {
 
   const db = openDatabase(config.dbPath);
   runMigrations(db);
-  const { bootstrapAdminInfo } = await runSeed(db, config);
-  if (bootstrapAdminInfo) {
-    console.log(
-      `[vercel-seed] Cuenta Admin configurada -> usuario: ${bootstrapAdminInfo.username} | clave: ${bootstrapAdminInfo.password}`
-    );
-  }
+  await runSeed(db, config);
 
   const { server } = createAppServer({ db, config });
   serverInstance = server;
