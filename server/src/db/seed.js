@@ -266,6 +266,12 @@ export async function runSeed(db, config) {
     };
   }
 
+  if (bootstrapAdminInfo) {
+    console.log(
+      `[seed] Cuenta Admin inicial configurada -> usuario: ${bootstrapAdminInfo.username} | clave: ${bootstrapAdminInfo.password}`
+    );
+  }
+
   // 2. Seed demo categories and products ONLY when explicitly enabled (e.g. automated tests).
   const catCount = db.prepare('SELECT COUNT(*) AS cnt FROM categories').get().cnt;
   if (config.seedDemoCatalog && catCount === 0) {
