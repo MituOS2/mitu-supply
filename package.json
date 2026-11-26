@@ -1,17 +1,17 @@
 {
-  "name": "tbd-supply-nose",
+  "name": "tbd-supply",
   "version": "1.0.0",
   "private": true,
   "description": "Tienda web creativa TBD.SUPPLY con UI nativa Miuix (Kotlin/Compose WebAssembly) + Node.js (>= 24) sin dependencias + SQLite",
   "license": "MIT",
-  "author": "Enrique, Edgarvis, Leonel, Aníbal y Jhoynner (TBD.SUPPLY)",
+  "author": "TBD.SUPPLY Team",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xUsoCarrusoX3/TBD-Supply.git"
+    "url": "https://github.com/MituOS2/mitu-supply.git"
   },
-  "homepage": "https://github.com/xUsoCarrusoX3/TBD-Supply#readme",
+  "homepage": "https://github.com/MituOS2/mitu-supply#readme",
   "bugs": {
-    "url": "https://github.com/xUsoCarrusoX3/TBD-Supply/issues"
+    "url": "https://github.com/MituOS2/mitu-supply/issues"
   },
   "keywords": [
     "ecommerce",

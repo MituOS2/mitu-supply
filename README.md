@@ -9,7 +9,7 @@
 [![SQLite WAL](https://img.shields.io/badge/SQLite-Native_WAL-003B57?logo=sqlite&logoColor=white)](https://nodejs.org/api/sqlite.html)
 [![Zero npm Deps](https://img.shields.io/badge/Backend_Deps-0_npm_packages-00BFA5)](#arquitectura-y-stack-técnico)
 
-> Proyecto creativo de ingeniería desarrollado y presentado por **Enrique**, **Edgarvis**, **Leonel**, **Aníbal** y **Jhoynner**.
+> Proyecto creativo de ingeniería desarrollado y mantenido por el **Equipo TBD.SUPPLY**.
 
 ---
 
@@ -52,7 +52,7 @@
 ### ¿Qué se puede hacer en la aplicación?
 
 - **Comprar como cliente:**
-  - Explorar el catálogo de objetos disponibles, buscar artículos por palabras clave, filtrarlos por categoría o por curador (`Enrique`, `Edgarvis`, `Leonel`, `Aníbal`) y ordenarlos por precio, novedad o stock disponible.
+  - Explorar el catálogo de objetos disponibles, buscar artículos por palabras clave, filtrarlos por categoría o por curador y ordenarlos por precio, novedad o stock disponible.
   - Abrir el detalle de cualquier producto para ver su galería interactiva de imágenes, descripción detallada, precio en **USD** y unidades disponibles.
   - Crear una cuenta personalizada, añadir artículos al **carrito de compras** (con fusión automática desde sesión invitada) y realizar pedidos con descuento automático de inventario y **recibo de confirmación** generado al instante.
   - Seguir el estado en tiempo real de cada orden y conversar directamente con el administrador desde el **chat integrado por pedido**, con soporte para enviar mensajes de texto y **subir imágenes** (comprobantes de pago o fotos de referencia).
@@ -68,10 +68,10 @@
 ## Características Principales
 
 ### Experiencia de Tienda (Frontend WebAssembly)
-- **Interfaz nativa con Miuix:** Renderizada mediante Kotlin / Compose Multiplatform (`wasmJs` + Skiko) utilizando el sistema de diseño [Miuix UI](https://github.com/compose-miuix-ui/miuix).
+- **Interfaz nativa con Miuix UI:** Renderizada mediante Kotlin / Compose Multiplatform (`wasmJs` + Skiko) utilizando el sistema de diseño [Miuix UI](https://github.com/compose-miuix-ui/miuix).
 - **Diseño adaptable (Responsive):** Transición fluida entre barra inferior (`NavigationBar`, `< 840 dp`) para dispositivos móviles y riel lateral (`NavigationRail`, expandible en `>= 1180 dp`) para pantallas de escritorio.
 - **Personalización visual en vivo:** Soporte nativo para 6 modos de color (`System`, `Light`, `Dark`, `MonetSystem`, `MonetLight`, `MonetDark`), paletas clave dinámicas y bordes suavizados *Squircle*.
-- **Catálogo interactivo:** Búsqueda rápida con escape de caracteres especiales, filtrado por categorías y creadores, ordenamiento por precio/fecha/stock y visualizador de imágenes con zoom.
+- **Catálogo interactivo:** Búsqueda rápida con escape de caracteres especiales, filtrado por categorías y curadores, ordenamiento por precio/fecha/stock y visualizador de imágenes con zoom.
 - **Carrito y Checkout en USD:** Carrito persistente indexado por usuario con fusión automática tras iniciar sesión (`/api/cart/merge`), cálculo exacto de subtotales en centavos enteros y recibo único con formato `TBD-YYYY-XXXXXX`.
 - **Chat directo por pedido:** Hilo de mensajería bidireccional cliente-administrador asignado a cada orden, con soporte para mensajes de texto y adjuntos de imagen validados (`PNG`, `JPEG`, `WebP`).
 
@@ -375,7 +375,7 @@ Las pruebas se ejecutan de manera aislada sobre un entorno temporal y una base d
 **Solución:** Asegúrate de tener instalado **Node.js >= 24.0.0**. Puedes verificar tu versión ejecutando `node -v` en la terminal.
 
 ### 2. Error al compilar Miuix o falta el directorio `./vendor/miuix`
-**Solución:** Ejecuta `iniciar.bat` (en Windows) o `./iniciar.sh` (en Linux/macOS). El script clonará e inicializará automáticamente la librería Miuix en el commit verificado.
+**Solución:** Ejecuta `iniciar.bat` (en Windows) o `./iniciar.sh` (en Linux/macOS). El script clonará e inicialización automáticamente la librería Miuix en el commit verificado.
 
 ### 3. Error de compilación en Gradle (`JDK 21 required`)
 **Solución:** Verifica que tu variable de entorno `JAVA_HOME` apunte a una instalación válida de **JDK 21** o superior.
@@ -396,6 +396,6 @@ Las pruebas se ejecutan de manera aislada sobre un entorno temporal y una base d
 
 ## Equipo y Licencia
 
-Desarrollado y mantenido por **Enrique**, **Edgarvis**, **Leonel**, **Aníbal** y **Jhoynner** (*TBD.SUPPLY*).
+Desarrollado y mantenido por el **Equipo TBD.SUPPLY**.
 
 Proyecto distribuido bajo la licencia libre **MIT**. Para más detalles, consulta el archivo [`LICENSE`](LICENSE).
