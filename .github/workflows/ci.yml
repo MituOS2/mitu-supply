@@ -33,7 +33,7 @@ jobs:
     steps:
       # Paso 1: Obtener el código fuente del repositorio
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Paso 2: Configurar la versión oficial de Node.js 24 (LTS)
       - name: Setup Node.js 24
@@ -58,7 +58,7 @@ jobs:
     steps:
       # Paso 1: Obtener el código fuente del repositorio
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Paso 2: Configurar Java JDK 21 (Temurin) para compilar Gradle
       - name: Setup Java 21
