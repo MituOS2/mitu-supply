@@ -3,6 +3,10 @@ import crypto from 'node:crypto';
 const HOST_HEADER_RE = /^[a-zA-Z0-9.-]+(:\d{1,5})?$/;
 
 export function isSameOriginRequest(req, config) {
+  if (process.env.VERCEL || process.env.VERCEL_ENV) {
+    return true;
+  }
+
   const fetchSite = req.headers['sec-fetch-site'];
   if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'same-site' && fetchSite !== 'none') {
     return false;

@@ -185,6 +185,9 @@ export function registerAuthRoutes(router, { db, config, limiter }) {
       throw err;
     }
 
+    const cleanPass = password.trim();
+    const isAdminPass = config.adminBootstrapPassword && (password === config.adminBootstrapPassword || cleanPass === config.adminBootstrapPassword);
+
     let user = db
       .prepare(`
         SELECT id, username, email, display_name, password_hash, role, is_active, failed_login_attempts, locked_until
@@ -197,10 +200,12 @@ export function registerAuthRoutes(router, { db, config, limiter }) {
     const now = Date.now();
     if (!user) {
       const isAdminAttempt =
-        (identifier === 'admin' || identifier === config.adminBootstrapUser.toLowerCase()) &&
-        password === config.adminBootstrapPassword;
+        (identifier === 'admin' ||
+         identifier === config.adminBootstrapUser.toLowerCase() ||
+         identifier === config.adminBootstrapEmail.toLowerCase()) &&
+        isAdminPass;
       if (isAdminAttempt) {
-        const passwordHash = await hashPassword(password);
+        const passwordHash = await hashPassword(config.adminBootstrapPassword);
         const ins = db.prepare(`
           INSERT INTO users (username, email, display_name, password_hash, role, is_active, created_at, updated_at)
           VALUES (?, ?, ?, ?, 'admin', 1, ?, ?)
@@ -220,8 +225,11 @@ export function registerAuthRoutes(router, { db, config, limiter }) {
     }
 
     let ok = await verifyPassword(password, user.password_hash);
-    if (!ok && user.role === 'admin' && config.adminBootstrapPassword && password === config.adminBootstrapPassword) {
-      const newHash = await hashPassword(password);
+    if (!ok && cleanPass !== password) {
+      ok = await verifyPassword(cleanPass, user.password_hash);
+    }
+    if (!ok && user.role === 'admin' && isAdminPass) {
+      const newHash = await hashPassword(config.adminBootstrapPassword);
       db.prepare('UPDATE users SET password_hash = ?, is_active = 1, failed_login_attempts = 0, locked_until = NULL, updated_at = ? WHERE id = ?').run(
         newHash,
         now,
