@@ -53,7 +53,16 @@ function isDirectLocalhost(req) {
 export function registerAuthRoutes(router, { db, config, limiter }) {
   router.get('/api/auth/me', async (req, res) => {
     const referer = String(req.headers.referer || '').toLowerCase();
-    const isUrlAdmin = referer.includes('/admin') || referer.includes('admin=1') || referer.includes('admin=true');
+    let refererPath = '';
+    try {
+      if (referer) refererPath = new URL(referer).pathname.toLowerCase();
+    } catch {}
+
+    const isUrlAdmin =
+      refererPath === '/admin' ||
+      refererPath.startsWith('/admin/') ||
+      referer.includes('admin=1') ||
+      referer.includes('admin=true');
 
     if (!req.session || !req.user || (isUrlAdmin && req.user.role !== 'admin')) {
       const isLocalhost = config.localAutoAdmin && isDirectLocalhost(req);

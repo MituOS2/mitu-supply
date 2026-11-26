@@ -119,6 +119,9 @@ export function createAppServer({ db, config }) {
 
       if (pathname.startsWith('/api/')) {
         attachSession(req, db, config);
+        if (req.autoAdminCookie) {
+          res.setHeader('Set-Cookie', req.autoAdminCookie);
+        }
         const match = router.match(req.method || 'GET', pathname);
         if (!match) {
           return sendJson(res, 404, { error: 'Ruta de API no encontrada' });
