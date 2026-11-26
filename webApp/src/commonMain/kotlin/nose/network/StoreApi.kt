@@ -90,6 +90,22 @@ private data class ProductStockPatchReq(val stock: Int)
 @Serializable
 private data class AdminUserPatchReq(val isActive: Boolean? = null, val role: String? = null)
 
+private val DEMO_CATEGORIES = listOf(
+    CategoryDto(id = 1, name = "Hardware & Teclados", slug = "hardware-teclados", description = "Periféricos táctiles y cables que sobreviven a cualquier entrega final.", accentHex = "#3482FF", sortOrder = 1, productCount = 2),
+    CategoryDto(id = 2, name = "Desk Setup", slug = "desk-setup", description = "Iluminación, deskmats y hubs para programar a las 2:00 AM.", accentHex = "#00BFA5", sortOrder = 2, productCount = 2),
+    CategoryDto(id = 3, name = "Apparel & Drip", slug = "apparel-drip", description = "Prendas heavyweight y accesorios con humor seco de ingeniería.", accentHex = "#7C4DFF", sortOrder = 3, productCount = 1),
+    CategoryDto(id = 4, name = "Edición Especial", slug = "edicion-04", description = "Curaduría limitada oficial de TBD.SUPPLY.", accentHex = "#FF6D00", sortOrder = 4, productCount = 1)
+)
+
+private val DEMO_PRODUCTS = listOf(
+    ProductDto(id = 1, categoryId = 1, categoryName = "Hardware & Teclados", categorySlug = "hardware-teclados", founderTag = "Crew", name = "Teclado 65% \"Ctrl+Z Físico\"", slug = "teclado-65-ctrl-z", subtitle = "Switches táctiles silenciosos + tecla Esc color alerta", description = "Diseñado para cuando borras la base de datos por accidente. Cuerpo compacto de aluminio cepillado, keycaps PBT y retroceso emocional inmediato.", priceCents = 8900, compareAtCents = 10900, stock = 14, primaryImageUrl = null, accentHex = "#3482FF"),
+    ProductDto(id = 2, categoryId = 1, categoryName = "Hardware & Teclados", categorySlug = "hardware-teclados", founderTag = "Crew", name = "Cable USB-C Blindado Anti-Parciales", slug = "cable-usbc-blindado", subtitle = "Trenzado de nylon 100W PD (no hace falsos contactos)", description = "Soporta datos a alta velocidad y cargas rápidas antes de entrar a clase.", priceCents = 1450, compareAtCents = 1900, stock = 38, primaryImageUrl = null, accentHex = "#2979FF"),
+    ProductDto(id = 3, categoryId = 2, categoryName = "Desk Setup", categorySlug = "desk-setup", founderTag = "Crew", name = "Lámpara Barra \"2:00 AM Focus\"", slug = "lampara-2am-focus", subtitle = "Temperatura regulable 2700K-6500K sin reflejo en monitor", description = "Diseñada para sesiones nocturnas de código sin destruir tus ojos ni iluminar toda la habitación.", priceCents = 3900, compareAtCents = 4900, stock = 19, primaryImageUrl = null, accentHex = "#00BFA5"),
+    ProductDto(id = 4, categoryId = 2, categoryName = "Desk Setup", categorySlug = "desk-setup", founderTag = "Crew", name = "Deskmat Topográfico \"Dark Compile\"", slug = "deskmat-dark-compile", subtitle = "900x400mm microtejido impermeable con bordes cosidos", description = "Líneas topográficas minimalistas que disimulan manchas de café y mejoran el deslizamiento del mouse.", priceCents = 2499, compareAtCents = 3200, stock = 27, primaryImageUrl = null, accentHex = "#00ACC1"),
+    ProductDto(id = 5, categoryId = 3, categoryName = "Apparel & Drip", categorySlug = "apparel-drip", founderTag = "Crew", name = "Hoodie Heavyweight \"404 Sleep Not Found\"", slug = "hoodie-404-sleep", subtitle = "Algodón 420gsm corte boxy fit color grafito", description = "Selección oficial TBD.SUPPLY. Suave por dentro, estructurado por fuera, ideal para aulas con aire acondicionado polar.", priceCents = 5400, compareAtCents = 6500, stock = 12, primaryImageUrl = null, accentHex = "#7C4DFF"),
+    ProductDto(id = 6, categoryId = 4, categoryName = "Edición Especial", categorySlug = "edicion-04", founderTag = "Crew", name = "Termo Térmico \"Cold Brew Protocol\"", slug = "termo-cold-brew", subtitle = "Acero inoxidable doble pared 600ml (12h caliente / 24h frío)", description = "Edición recomendada: mantiene tu café frío intacto desde la primera hora hasta la última exposición.", priceCents = 2600, compareAtCents = 3100, stock = 20, primaryImageUrl = null, accentHex = "#FF6D00")
+)
+
 private fun encodeQueryComponent(value: String): String {
     val bytes = value.encodeToByteArray()
     val hex = "0123456789ABCDEF"
@@ -138,20 +154,28 @@ class StoreApi {
         return json.decodeFromString<T>(resp.body)
     }
 
-    suspend fun getMe(): AuthResponseDto {
+    suspend fun getMe(): AuthResponseDto = try {
         val res = call<AuthResponseDto>("GET", "/api/auth/me")
         csrfToken = res.csrfToken
-        return res
+        res
+    } catch (e: ApiException) {
+        if (e.status == 404 || e.status == 0) {
+            AuthResponseDto(user = null, csrfToken = "demo-csrf-token")
+        } else throw e
     }
 
-    suspend fun login(identifier: String, password: String): UserDto {
+    suspend fun login(identifier: String, password: String): UserDto = try {
         val res = call<AuthResponseDto>(
             "POST",
             "/api/auth/login",
             json.encodeToString(LoginReq(identifier, password)),
         )
         csrfToken = res.csrfToken
-        return res.user ?: throw ApiException(500, "Respuesta de sesion invalida")
+        res.user ?: throw ApiException(500, "Respuesta de sesion invalida")
+    } catch (e: ApiException) {
+        if (e.status == 404 || e.status == 0) {
+            throw ApiException(404, "Netlify es un servidor estático CDN (solo frontend). Para conectar la base de datos real con usuario admin, despliega el backend Node.js en Render.com o ejecuta 'iniciar-publico.bat' con Cloudflare Tunnel.")
+        } else throw e
     }
 
     suspend fun register(username: String, email: String, password: String, displayName: String? = null): UserDto {
@@ -183,15 +207,18 @@ class StoreApi {
         if (res.csrfToken != null) csrfToken = res.csrfToken
     }
 
-    suspend fun getCategories(): List<CategoryDto> =
+    suspend fun getCategories(): List<CategoryDto> = try {
         call<CategoriesResponseDto>("GET", "/api/categories").categories
+    } catch (e: ApiException) {
+        if (e.status == 404 || e.status == 0) DEMO_CATEGORIES else throw e
+    }
 
     suspend fun getProducts(
         query: String = "",
         categorySlug: String = "",
         founder: String = "",
         sort: String = "newest",
-    ): ProductsPageDto {
+    ): ProductsPageDto = try {
         val params = buildList {
             if (query.isNotBlank()) add("q=${encodeQueryComponent(query.trim())}")
             if (categorySlug.isNotBlank()) add("category=${encodeQueryComponent(categorySlug)}")
@@ -199,13 +226,42 @@ class StoreApi {
             if (sort.isNotBlank()) add("sort=${encodeQueryComponent(sort)}")
             add("limit=48")
         }.joinToString("&")
-        return call("GET", "/api/products?$params")
+        call("GET", "/api/products?$params")
+    } catch (e: ApiException) {
+        if (e.status == 404 || e.status == 0) {
+            val filtered = DEMO_PRODUCTS.filter { p ->
+                (categorySlug.isBlank() || p.categorySlug == categorySlug) &&
+                (query.isBlank() || p.name.contains(query, ignoreCase = true) || p.description.contains(query, ignoreCase = true))
+            }
+            ProductsPageDto(
+                items = filtered,
+                total = filtered.size,
+                page = 1,
+                limit = 48,
+                hasMore = false,
+                query = query,
+                category = categorySlug.ifBlank { null },
+                founder = founder.ifBlank { null },
+                sort = sort
+            )
+        } else throw e
     }
 
-    suspend fun getProductDetail(slug: String): ProductDto =
+    suspend fun getProductDetail(slug: String): ProductDto = try {
         call<ProductSingleResponseDto>("GET", "/api/products/${encodeQueryComponent(slug)}").product
+    } catch (e: ApiException) {
+        if (e.status == 404 || e.status == 0) {
+            DEMO_PRODUCTS.firstOrNull { it.slug == slug } ?: DEMO_PRODUCTS.first()
+        } else throw e
+    }
 
-    suspend fun getCart(): CartResponseDto = call("GET", "/api/cart")
+    suspend fun getCart(): CartResponseDto = try {
+        call("GET", "/api/cart")
+    } catch (e: ApiException) {
+        if (e.status == 404 || e.status == 0) {
+            CartResponseDto(items = emptyList(), itemCount = 0, subtotalCents = 0)
+        } else throw e
+    }
 
     suspend fun setCartQuantity(productId: Int, quantity: Int): CartResponseDto =
         call("PUT", "/api/cart/items/$productId", json.encodeToString(CartQtyReq(quantity)))
