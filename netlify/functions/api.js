@@ -2,7 +2,7 @@
 // TBD.SUPPLY — Netlify Serverless API Function
 // ==============================================================================
 // Atiende todas las llamadas a /api/* en Netlify sin necesidad de un VPS.
-// Proporciona autenticación admin, catálogo, categorías, carrito y dashboard.
+// Proporciona autenticación, catálogo, categorías, carrito y dashboard.
 
 export async function handler(event) {
   let path = event.path || '/';
@@ -27,21 +27,14 @@ export async function handler(event) {
     return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
   }
 
-  // 2. Sesión activa (/api/auth/me)
+  // 2. Sesión activa (/api/auth/me) -> Invitado por defecto
   if (path === '/auth/me') {
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        user: {
-          id: 1,
-          username: 'admin',
-          email: 'admin@tbdsupply.local',
-          displayName: 'Administrador TBD.SUPPLY',
-          role: 'admin',
-          isActive: true,
-        },
-        csrfToken: 'netlify-admin-csrf-token-2026',
+        user: null,
+        csrfToken: 'netlify-csrf-token-2026',
       }),
     };
   }
@@ -57,7 +50,7 @@ export async function handler(event) {
     const identifier = (body.identifier || body.username || '').trim();
     const password = body.password || '';
 
-    if (password === 'admin12345' || identifier === 'admin' || password.length > 0) {
+    if (password === 'admin12345' || identifier === 'admin') {
       return {
         statusCode: 200,
         headers,
@@ -101,12 +94,12 @@ export async function handler(event) {
   // 5. Catálogo de Productos (/api/products o /api/admin/products)
   if (path.startsWith('/products') || path.startsWith('/admin/products')) {
     const products = [
-      { id: 1, categoryId: 1, categoryName: 'Hardware & Teclados', categorySlug: 'hardware-teclados', founderTag: 'Crew', name: 'Teclado 65% "Ctrl+Z Físico"', slug: 'teclado-65-ctrl-z', subtitle: 'Switches táctiles silenciosos + tecla Esc color alerta', description: 'Diseñado para cuando borras la base de datos por accidente. Cuerpo compacto de aluminio cepillado, keycaps PBT.', priceCents: 8900, compareAtCents: 10900, stock: 14, primaryImageUrl: null, accentHex: '#3482FF', isActive: 1 },
-      { id: 2, categoryId: 1, categoryName: 'Hardware & Teclados', categorySlug: 'hardware-teclados', founderTag: 'Crew', name: 'Cable USB-C Blindado Anti-Parciales', slug: 'cable-usbc-blindado', subtitle: 'Trenzado de nylon 100W PD', description: 'Soporta datos a alta velocidad y cargas rápidas.', priceCents: 1450, compareAtCents: 1900, stock: 38, primaryImageUrl: null, accentHex: '#2979FF', isActive: 1 },
-      { id: 3, categoryId: 2, categoryName: 'Desk Setup', categorySlug: 'desk-setup', founderTag: 'Crew', name: 'Lámpara Barra "2:00 AM Focus"', slug: 'lampara-2am-focus', subtitle: 'Temperatura regulable 2700K-6500K', description: 'Diseñada para sesiones nocturnas de código.', priceCents: 3900, compareAtCents: 4900, stock: 19, primaryImageUrl: null, accentHex: '#00BFA5', isActive: 1 },
-      { id: 4, categoryId: 2, categoryName: 'Desk Setup', categorySlug: 'desk-setup', founderTag: 'Crew', name: 'Deskmat Topográfico "Dark Compile"', slug: 'deskmat-dark-compile', subtitle: '900x400mm microtejido impermeable', description: 'Líneas topográficas minimalistas.', priceCents: 2499, compareAtCents: 3200, stock: 27, primaryImageUrl: null, accentHex: '#00ACC1', isActive: 1 },
-      { id: 5, categoryId: 3, categoryName: 'Apparel & Drip', categorySlug: 'apparel-drip', founderTag: 'Crew', name: 'Hoodie Heavyweight "404 Sleep Not Found"', slug: 'hoodie-404-sleep', subtitle: 'Algodón 420gsm corte boxy fit', description: 'Selección oficial TBD.SUPPLY. Suave por dentro.', priceCents: 5400, compareAtCents: 6500, stock: 12, primaryImageUrl: null, accentHex: '#7C4DFF', isActive: 1 },
-      { id: 6, categoryId: 4, categoryName: 'Edición Especial', categorySlug: 'edicion-04', founderTag: 'Crew', name: 'Termo Térmico "Cold Brew Protocol"', slug: 'termo-cold-brew', subtitle: 'Acero inoxidable doble pared 600ml', description: 'Edición recomendada: mantiene tu café frío intacto 24h.', priceCents: 2600, compareAtCents: 3100, stock: 20, primaryImageUrl: null, accentHex: '#FF6D00', isActive: 1 },
+      { id: 1, categoryId: 1, categoryName: 'Hardware & Teclados', categorySlug: 'hardware-teclados', founderTag: 'Crew', name: 'Teclado 65% "Ctrl+Z Físico"', slug: 'teclado-65-ctrl-z', subtitle: 'Switches táctiles silenciosos + tecla Esc color alerta', description: 'Diseñado para cuando borras la base de datos por accidente. Cuerpo compacto de aluminio cepillado, keycaps PBT.', priceCents: 8900, compareAtCents: 10900, stock: 14, primaryImageUrl: '/media/prod-keyboard.png', accentHex: '#3482FF', isActive: 1 },
+      { id: 2, categoryId: 1, categoryName: 'Hardware & Teclados', categorySlug: 'hardware-teclados', founderTag: 'Crew', name: 'Cable USB-C Blindado Anti-Parciales', slug: 'cable-usbc-blindado', subtitle: 'Trenzado de nylon 100W PD', description: 'Soporta datos a alta velocidad y cargas rápidas.', priceCents: 1450, compareAtCents: 1900, stock: 38, primaryImageUrl: '/media/prod-cable.png', accentHex: '#2979FF', isActive: 1 },
+      { id: 3, categoryId: 2, categoryName: 'Desk Setup', categorySlug: 'desk-setup', founderTag: 'Crew', name: 'Lámpara Barra "2:00 AM Focus"', slug: 'lampara-2am-focus', subtitle: 'Temperatura regulable 2700K-6500K', description: 'Diseñada para sesiones nocturnas de código.', priceCents: 3900, compareAtCents: 4900, stock: 19, primaryImageUrl: '/media/prod-lamp.png', accentHex: '#00BFA5', isActive: 1 },
+      { id: 4, categoryId: 2, categoryName: 'Desk Setup', categorySlug: 'desk-setup', founderTag: 'Crew', name: 'Deskmat Topográfico "Dark Compile"', slug: 'deskmat-dark-compile', subtitle: '900x400mm microtejido impermeable', description: 'Líneas topográficas minimalistas.', priceCents: 2499, compareAtCents: 3200, stock: 27, primaryImageUrl: '/media/prod-deskmat.png', accentHex: '#00ACC1', isActive: 1 },
+      { id: 5, categoryId: 3, categoryName: 'Apparel & Drip', categorySlug: 'apparel-drip', founderTag: 'Crew', name: 'Hoodie Heavyweight "404 Sleep Not Found"', slug: 'hoodie-404-sleep', subtitle: 'Algodón 420gsm corte boxy fit', description: 'Selección oficial TBD.SUPPLY. Suave por dentro.', priceCents: 5400, compareAtCents: 6500, stock: 12, primaryImageUrl: '/media/prod-hoodie.png', accentHex: '#7C4DFF', isActive: 1 },
+      { id: 6, categoryId: 4, categoryName: 'Edición Especial', categorySlug: 'edicion-04', founderTag: 'Crew', name: 'Termo Térmico "Cold Brew Protocol"', slug: 'termo-cold-brew', subtitle: 'Acero inoxidable doble pared 600ml', description: 'Edición recomendada: mantiene tu café frío intacto 24h.', priceCents: 2600, compareAtCents: 3100, stock: 20, primaryImageUrl: '/media/prod-thermos.png', accentHex: '#FF6D00', isActive: 1 },
     ];
 
     if (path.length > '/products/'.length && !path.includes('?')) {
