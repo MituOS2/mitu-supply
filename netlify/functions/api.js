@@ -39,7 +39,7 @@ export async function handler(event) {
     };
   }
 
-  // 3. Inicio de sesión (/api/auth/login)
+  // 3a. Inicio de sesión (/api/auth/login)
   if (path === '/auth/login') {
     let body = {};
     try {
@@ -68,10 +68,58 @@ export async function handler(event) {
       };
     }
 
+    // Permite login de cualquier usuario cliente en Netlify
+    if (identifier.length >= 3 && password.length >= 4) {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          user: {
+            id: Math.floor(Date.now() / 1000),
+            username: identifier,
+            email: `${identifier}@example.com`,
+            displayName: identifier,
+            role: 'customer',
+            isActive: true,
+          },
+          csrfToken: 'netlify-user-csrf-token-2026',
+        }),
+      };
+    }
+
     return {
       statusCode: 400,
       headers,
       body: JSON.stringify({ error: 'Credenciales inválidas. Usa usuario: admin y clave: admin12345' }),
+    };
+  }
+
+  // 3b. Registro de nuevo usuario (/api/auth/register)
+  if (path === '/auth/register') {
+    let body = {};
+    try {
+      body = JSON.parse(event.body || '{}');
+    } catch {
+      // Body vacío
+    }
+    const username = (body.username || '').trim() || 'nuevo_usuario';
+    const email = (body.email || '').trim() || `${username}@example.com`;
+    const displayName = (body.displayName || username).trim();
+
+    return {
+      statusCode: 201,
+      headers,
+      body: JSON.stringify({
+        user: {
+          id: Math.floor(Date.now() / 1000),
+          username: username,
+          email: email,
+          displayName: displayName,
+          role: 'customer',
+          isActive: true,
+        },
+        csrfToken: 'netlify-user-csrf-token-2026',
+      }),
     };
   }
 
