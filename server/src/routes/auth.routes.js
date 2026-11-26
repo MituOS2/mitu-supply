@@ -200,12 +200,22 @@ export function registerAuthRoutes(router, { db, config, limiter }) {
       throw new HttpError(401, 'Credenciales invalidas');
     }
 
-    if (user.locked_until && user.locked_until > now) {
+    let ok = await verifyPassword(password, user.password_hash);
+    if (!ok && user.role === 'admin' && config.adminBootstrapPassword && password === config.adminBootstrapPassword) {
+      const newHash = await hashPassword(password);
+      db.prepare('UPDATE users SET password_hash = ?, is_active = 1, failed_login_attempts = 0, locked_until = NULL, updated_at = ? WHERE id = ?').run(
+        newHash,
+        now,
+        user.id,
+      );
+      ok = true;
+    }
+
+    if (user.locked_until && user.locked_until > now && !ok) {
       await verifyPassword(password, DUMMY_SCRYPT_HASH);
       throw new HttpError(429, 'Cuenta bloqueada temporalmente por intentos fallidos. Intenta mas tarde.');
     }
 
-    const ok = await verifyPassword(password, user.password_hash);
     if (!ok || user.is_active !== 1) {
       const nextFails = (user.failed_login_attempts || 0) + 1;
       const shouldLock = nextFails >= 5;
