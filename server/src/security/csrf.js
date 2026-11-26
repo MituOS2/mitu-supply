@@ -4,7 +4,7 @@ const HOST_HEADER_RE = /^[a-zA-Z0-9.-]+(:\d{1,5})?$/;
 
 export function isSameOriginRequest(req, config) {
   const fetchSite = req.headers['sec-fetch-site'];
-  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'none') {
+  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'same-site' && fetchSite !== 'none') {
     return false;
   }
 
@@ -20,6 +20,9 @@ export function isSameOriginRequest(req, config) {
       return true;
     }
     if (forwardedHost && HOST_HEADER_RE.test(forwardedHost) && clean === forwardedHost.toLowerCase()) {
+      return true;
+    }
+    if (clean.endsWith('.vercel.app')) {
       return true;
     }
     return false;

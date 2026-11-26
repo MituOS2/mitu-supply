@@ -118,8 +118,8 @@ export function buildSessionCookie(rawToken, config, req) {
     'SameSite=Strict',
     `Max-Age=${maxAgeSec}`,
   ];
-  const isHttps = req?.socket?.encrypted === true || (config.trustProxy && req?.headers?.['x-forwarded-proto'] === 'https');
-  if (config.cookieSecure && isHttps) {
+  const isHttps = req?.socket?.encrypted === true || (config.trustProxy && req?.headers?.['x-forwarded-proto'] === 'https') || Boolean(process.env.VERCEL) || Boolean(process.env.VERCEL_ENV);
+  if ((config.cookieSecure || Boolean(process.env.VERCEL) || Boolean(process.env.VERCEL_ENV)) && isHttps) {
     parts.push('Secure');
   }
   return parts.join('; ');
@@ -133,8 +133,8 @@ export function buildClearSessionCookie(config, req) {
     'SameSite=Strict',
     'Max-Age=0',
   ];
-  const isHttps = req?.socket?.encrypted === true || (config.trustProxy && req?.headers?.['x-forwarded-proto'] === 'https');
-  if (config.cookieSecure && isHttps) {
+  const isHttps = req?.socket?.encrypted === true || (config.trustProxy && req?.headers?.['x-forwarded-proto'] === 'https') || Boolean(process.env.VERCEL) || Boolean(process.env.VERCEL_ENV);
+  if ((config.cookieSecure || Boolean(process.env.VERCEL) || Boolean(process.env.VERCEL_ENV)) && isHttps) {
     parts.push('Secure');
   }
   return parts.join('; ');

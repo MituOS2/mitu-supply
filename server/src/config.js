@@ -89,7 +89,7 @@ export function loadConfig(overrides = {}) {
     sessionPepper,
     ipHashSalt,
     allowedOrigins,
-    trustProxy: process.env.TRUST_PROXY === 'true',
+    trustProxy: process.env.TRUST_PROXY === 'true' || Boolean(process.env.VERCEL) || Boolean(process.env.VERCEL_ENV),
     cookieSecure: process.env.COOKIE_SECURE === 'true' || isProd,
     sessionTtlMs: 1000 * 60 * 60 * 24 * 7, // 7 dias maximos
     sessionIdleTtlMs: 1000 * 60 * 60 * 12, // 12 horas de inactividad

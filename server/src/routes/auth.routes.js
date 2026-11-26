@@ -185,7 +185,7 @@ export function registerAuthRoutes(router, { db, config, limiter }) {
       throw err;
     }
 
-    const user = db
+    let user = db
       .prepare(`
         SELECT id, username, email, display_name, password_hash, role, is_active, failed_login_attempts, locked_until
         FROM users
@@ -196,8 +196,27 @@ export function registerAuthRoutes(router, { db, config, limiter }) {
 
     const now = Date.now();
     if (!user) {
-      await verifyPassword(password, DUMMY_SCRYPT_HASH);
-      throw new HttpError(401, 'Credenciales invalidas');
+      const isAdminAttempt =
+        (identifier === 'admin' || identifier === config.adminBootstrapUser.toLowerCase()) &&
+        password === config.adminBootstrapPassword;
+      if (isAdminAttempt) {
+        const passwordHash = await hashPassword(password);
+        const ins = db.prepare(`
+          INSERT INTO users (username, email, display_name, password_hash, role, is_active, created_at, updated_at)
+          VALUES (?, ?, ?, ?, 'admin', 1, ?, ?)
+        `).run(
+          config.adminBootstrapUser,
+          config.adminBootstrapEmail,
+          'Admin Escuadrón 04',
+          passwordHash,
+          now,
+          now,
+        );
+        user = db.prepare('SELECT id, username, email, display_name, password_hash, role, is_active, failed_login_attempts, locked_until FROM users WHERE id = ?').get(Number(ins.lastInsertRowid));
+      } else {
+        await verifyPassword(password, DUMMY_SCRYPT_HASH);
+        throw new HttpError(401, 'Credenciales invalidas');
+      }
     }
 
     let ok = await verifyPassword(password, user.password_hash);
