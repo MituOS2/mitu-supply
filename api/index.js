@@ -32,9 +32,33 @@ async function getServer() {
   return serverInstance;
 }
 
+function resolveApiUrl(req) {
+  const matchedPath = req.headers['x-matched-path'] || req.headers['x-invoke-path'] || req.headers['x-rewrite-url'];
+  if (matchedPath && matchedPath.startsWith('/api') && !matchedPath.includes('index.js')) {
+    return matchedPath;
+  }
+  const rawUrl = req.url || '/api';
+  if (!rawUrl.includes('index.js')) {
+    return rawUrl;
+  }
+  try {
+    const parsed = new URL(rawUrl, 'http://localhost');
+    const route = parsed.searchParams.get('route');
+    if (route !== null) {
+      const cleanRoute = route.replace(/^\/+/, '');
+      const search = parsed.search.replace(/\?route=[^&]*&?/, '?').replace(/\?$/, '');
+      return '/api/' + cleanRoute + search;
+    }
+  } catch {
+    // fallback
+  }
+  return rawUrl;
+}
+
 export default async function handler(req, res) {
   try {
     const server = await getServer();
+    req.url = resolveApiUrl(req);
     server.emit('request', req, res);
   } catch (err) {
     console.error('[vercel-api-error]', err);
