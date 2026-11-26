@@ -116,6 +116,7 @@ class StoreAppState(
     fun bootstrap() {
         scope.launch {
             isBootstrapping = true
+            val isAdminUrl = platformIsAdminUrl()
             runCatching {
                 val me = api.getMe()
                 user = me.user
@@ -123,6 +124,21 @@ class StoreAppState(
             refreshCatalogInternal()
             if (user != null) {
                 refreshCartAndOrders()
+                if (user?.role == "admin" || isAdminUrl) {
+                    if (user?.role == "admin") {
+                        loadAdminAll()
+                        currentTab = AppTab.Admin
+                    }
+                }
+            } else if (isAdminUrl) {
+                runCatching {
+                    val me = api.getMe()
+                    user = me.user
+                    if (user?.role == "admin") {
+                        loadAdminAll()
+                        currentTab = AppTab.Admin
+                    }
+                }
             }
             isBootstrapping = false
         }

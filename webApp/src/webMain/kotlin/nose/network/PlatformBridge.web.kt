@@ -323,3 +323,20 @@ private external fun formatDateJs(ms: Double): String
 
 actual fun platformFormatDate(epochMs: Long): String = formatDateJs(epochMs.toDouble())
 
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun(
+    """
+    function isAdminUrlJs() {
+        try {
+            var href = window.location.href.toLowerCase();
+            return href.indexOf('/admin') !== -1 || href.indexOf('admin=1') !== -1 || href.indexOf('admin=true') !== -1;
+        } catch (e) {
+            return false;
+        }
+    }
+    """,
+)
+private external fun isAdminUrlJs(): Boolean
+
+actual fun platformIsAdminUrl(): Boolean = runCatching { isAdminUrlJs() }.getOrDefault(false)
+

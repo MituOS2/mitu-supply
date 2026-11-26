@@ -33,3 +33,5 @@ expect suspend fun platformPickAndSendOrderImage(
 ): HttpRawResponse?
 
 expect fun platformFormatDate(epochMs: Long): String
+
+expect fun platformIsAdminUrl(): Boolean
