@@ -1,0 +1,17 @@
+{
+  "name": "tbd-supply-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend HTTP y SQLite sin dependencias de terceros para TBD.SUPPLY",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "seed": "node src/db/runSeed.js",
+    "test": "node --test tests/integration.test.js tests/security.test.js"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}
