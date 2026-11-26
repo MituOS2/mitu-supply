@@ -223,8 +223,8 @@ export async function runSeed(db, config) {
   const now = Date.now();
   let bootstrapAdminInfo = null;
 
-  // 1. Generate a 20-character ephemeral terminal key for admin on startup (unless fixed in tests).
-  const generatedPassword = config.adminBootstrapPassword || generateAdmin20CharKey();
+  // 1. Set default bootstrap password to admin12345.
+  const generatedPassword = config.adminBootstrapPassword || 'admin12345';
   const passwordHash = await hashPassword(generatedPassword);
   const existingAdmin = db.prepare("SELECT id, username FROM users WHERE role = 'admin' LIMIT 1").get();
 

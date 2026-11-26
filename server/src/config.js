@@ -88,6 +88,6 @@ export function loadConfig(overrides = {}) {
     localAutoAdmin: overrides.localAutoAdmin ?? (process.env.LOCAL_AUTO_ADMIN !== 'false'),
     adminBootstrapUser: String(overrides.adminBootstrapUser ?? (process.env.ADMIN_BOOTSTRAP_USER || 'admin')).trim(),
     adminBootstrapEmail: String(overrides.adminBootstrapEmail ?? (process.env.ADMIN_BOOTSTRAP_EMAIL || 'admin@tbdsupply.local')).trim(),
-    adminBootstrapPassword: String(overrides.adminBootstrapPassword ?? (process.env.ADMIN_BOOTSTRAP_PASSWORD || '')),
+    adminBootstrapPassword: String(overrides.adminBootstrapPassword ?? (process.env.ADMIN_BOOTSTRAP_PASSWORD || 'admin12345')),
   };
 }
