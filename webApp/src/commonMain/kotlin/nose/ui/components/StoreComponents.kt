@@ -157,14 +157,7 @@ fun TagPill(
 
 @Composable
 fun FounderTagPill(founder: String, modifier: Modifier = Modifier) {
-    val low = founder.lowercase()
-    val accent = when {
-        low.contains("enrique") -> Color(0xFF3482FF)
-        low.contains("edgar") -> Color(0xFF00BFA5)
-        low.contains("leonel") || low.contains("leoner") -> Color(0xFF7C4DFF)
-        low.contains("anibal") || low.contains("aníbal") -> Color(0xFFFF6D00)
-        else -> MiuixTheme.colorScheme.primary
-    }
+    val accent = MiuixTheme.colorScheme.primary
     TagPill(
         text = founder,
         containerColor = accent.copy(alpha = 0.14f),

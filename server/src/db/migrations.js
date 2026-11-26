@@ -41,7 +41,7 @@ export function runMigrations(db) {
     CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
-      founder_tag TEXT NOT NULL DEFAULT 'Crew' CHECK (founder_tag IN ('Enrique', 'Edgarvis', 'Leonel', 'Aníbal', 'Crew')),
+      founder_tag TEXT NOT NULL DEFAULT 'Crew',
       name TEXT NOT NULL,
       slug TEXT NOT NULL UNIQUE COLLATE NOCASE,
       subtitle TEXT NOT NULL DEFAULT '',

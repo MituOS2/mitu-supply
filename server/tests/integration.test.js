@@ -245,24 +245,24 @@ test('Flujo integral completo: catalogo, registro, carrito, compra atomica y pan
     assert.equal(uploadRes.status, 201);
     assert.ok(uploadRes.data.image.url.startsWith('/api/media/'));
 
-    // Creacion rapida de producto escribiendo nombre de categoria ("Leonel") sin crearla antes
+    // Creacion rapida de producto escribiendo nombre de categoria ("Accesorios") sin crearla antes
     const directCatProd = await admin.request('POST', '/api/admin/products', {
       json: {
-        categoryName: 'Leonel',
-        name: 'Gorra Leonel Custom',
+        categoryName: 'Accesorios',
+        name: 'Gorra Custom Test',
         priceCents: 1500,
         stock: 8,
       },
     });
     assert.equal(directCatProd.status, 201);
-    assert.equal(directCatProd.data.product.founderTag, 'Leonel');
+    assert.equal(directCatProd.data.product.founderTag, 'Crew');
 
     // Editar producto enviando slug: null y categoryId: null (como serializa Kotlin/Wasm)
     const patchProd = await admin.request('PATCH', `/api/admin/products/${directCatProd.data.product.id}`, {
       json: {
         categoryId: null,
-        categoryName: 'Leonel',
-        name: 'Gorra Leonel Editada',
+        categoryName: 'Accesorios',
+        name: 'Gorra Editada Test',
         slug: null,
         priceCents: 1800,
         compareAtCents: null,
@@ -271,7 +271,7 @@ test('Flujo integral completo: catalogo, registro, carrito, compra atomica y pan
       },
     });
     assert.equal(patchProd.status, 200);
-    assert.equal(patchProd.data.product.name, 'Gorra Leonel Editada');
+    assert.equal(patchProd.data.product.name, 'Gorra Editada Test');
     assert.equal(patchProd.data.product.priceCents, 1800);
 
     // Eliminar categoria con productos asignados funciona directamente sin bloqueo 409

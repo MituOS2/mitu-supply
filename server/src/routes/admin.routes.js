@@ -29,16 +29,8 @@ function parseIdParam(raw) {
 
 const ACCENT_PALETTE = ['#3482FF', '#00BFA5', '#7C4DFF', '#FF6D00', '#E91E63', '#00BCD4'];
 
-function inferFounderFromText(text) {
-  const low = String(text || '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-  if (low.includes('enrique')) return 'Enrique';
-  if (low.includes('edgar')) return 'Edgarvis';
-  if (low.includes('leonel') || low.includes('leoner')) return 'Leonel';
-  if (low.includes('anibal')) return 'Aníbal';
-  return null;
+function inferFounderFromText() {
+  return 'Crew';
 }
 
 function buildSafeSlug(rawText, fallbackPrefix = 'item') {
@@ -63,17 +55,7 @@ function resolveOrCreateCategoryId(db, { categoryId, categoryName }, now) {
     if (db.prepare('SELECT id FROM categories WHERE slug = ?').get(finalSlug)) {
       finalSlug = `${candidateSlug.slice(0, 50)}-${now.toString(36).slice(-4)}`;
     }
-    const founder = inferFounderFromText(cleanName);
-    const accent =
-      founder === 'Enrique'
-        ? '#3482FF'
-        : founder === 'Edgarvis'
-          ? '#00BFA5'
-          : founder === 'Leonel'
-            ? '#7C4DFF'
-            : founder === 'Aníbal'
-              ? '#FF6D00'
-              : ACCENT_PALETTE[Math.floor(now % ACCENT_PALETTE.length)];
+    const accent = ACCENT_PALETTE[Math.floor(now % ACCENT_PALETTE.length)];
 
     const ins = db
       .prepare(`

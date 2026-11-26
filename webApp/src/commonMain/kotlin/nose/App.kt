@@ -102,7 +102,7 @@ fun NoseStoreApp() {
                         SmallTopAppBar(
                             title = BrandConfig.NAME,
                             subtitle = when (state.currentTab) {
-                                AppTab.Store -> "Enrique · Edgarvis · Leonel · Aníbal"
+                                AppTab.Store -> BrandConfig.TAGLINE
                                 AppTab.Categories -> "Categorías del catálogo"
                                 AppTab.Cart -> "Checkout USD seguro"
                                 AppTab.Account -> if (state.user != null) "@${state.user!!.username}" else "Acceso y ajustes"

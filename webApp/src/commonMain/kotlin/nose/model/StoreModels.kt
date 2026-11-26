@@ -6,8 +6,8 @@ object BrandConfig {
     const val NAME = "TBD.SUPPLY"
     const val TAGLINE = "Hardware, Drip & Objetos con Criterio"
     const val CURRENCY = "USD"
-    val FOUNDERS = listOf("Todos", "Enrique", "Edgarvis", "Leonel", "Aníbal")
-    val ADMIN_FOUNDER_TAGS = listOf("Enrique", "Edgarvis", "Leonel", "Aníbal", "Crew")
+    val FOUNDERS = listOf("Todos", "Colección", "Hardware", "Accesorios")
+    val ADMIN_FOUNDER_TAGS = listOf("General", "Hardware", "Accesorios", "Edición Especial", "Crew")
     val ORDER_STATUSES = listOf("pending", "preparing", "shipped", "delivered", "cancelled")
     val CATEGORY_ACCENTS = listOf(
         "Azul" to "#3482FF",

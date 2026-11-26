@@ -18,7 +18,7 @@ function Write-Banner {
     Write-Host ''
     Write-Host '================================================================' -ForegroundColor Cyan
     Write-Host '  TBD.SUPPLY // Instalador y Lanzador Automatico' -ForegroundColor Cyan
-    Write-Host '  Presentado por: Enrique, Edgarvis, Leonel y Anibal' -ForegroundColor DarkCyan
+    Write-Host '  Presentado por: Equipo TBD.SUPPLY' -ForegroundColor DarkCyan
     Write-Host '================================================================' -ForegroundColor Cyan
     Write-Host ''
 }

@@ -543,7 +543,7 @@ private fun AdminProductsTab(
                     insideMargin = PaddingValues(18.dp),
                 ) {
                     Text(
-                        text = "No hay productos todavía. Toca '+ Nuevo Producto' arriba: puedes escribir cualquier categoría (ej. Enrique, Leonel, Aníbal, lo que quieras) y se creará sola.",
+                        text = "No hay productos todavía. Toca '+ Nuevo Producto' arriba: puedes escribir cualquier categoría (ej. Hardware, Accesorios, Ropa) y se creará sola.",
                         style = MiuixTheme.textStyles.body2,
                         color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                     )
@@ -635,7 +635,7 @@ private fun AdminCategoriesTab(
     onCreate: () -> Unit,
     onEdit: (CategoryDto) -> Unit,
 ) {
-    val quickNames = listOf("Enrique", "Edgarvis", "Leonel", "Aníbal")
+    val quickNames = listOf("Hardware", "Accesorios", "Ropa", "Colección")
     val existingLower = remember(state.adminCategories) {
         state.adminCategories.map { it.name.lowercase() }.toSet()
     }
@@ -1011,7 +1011,7 @@ private fun ProductEditorSheet(
     var isActive by remember(initial?.id) { mutableStateOf((initial?.isActive ?: 1) == 1) }
 
     val quickCategorySuggestions = remember(categories) {
-        val base = listOf("Enrique", "Edgarvis", "Leonel", "Aníbal", "General")
+        val base = listOf("Hardware", "Accesorios", "Ropa", "General")
         val existing = categories.map { it.name }
         (existing + base).distinctBy { it.lowercase() }
     }
@@ -1024,7 +1024,7 @@ private fun ProductEditorSheet(
         }
         val cleanCat = categoryName.trim()
         if (cleanCat.length < 2) {
-            onInvalid("Escribe o selecciona una categoría (ej. Enrique, Leonel, Aníbal)")
+            onInvalid("Escribe o selecciona una categoría (ej. Hardware, Accesorios, General)")
             return
         }
         val priceCents = parseUsdToCents(priceUsd)
@@ -1309,10 +1309,10 @@ private fun CategoryEditorDialog(
     var isActive by remember(initial?.id) { mutableStateOf((initial?.isActive ?: 1) == 1) }
 
     val quickSuggestions = listOf(
-        "Enrique" to "#3482FF",
-        "Edgarvis" to "#00BFA5",
-        "Leonel" to "#7C4DFF",
-        "Aníbal" to "#FF6D00",
+        "Hardware" to "#3482FF",
+        "Desk Setup" to "#00BFA5",
+        "Apparel" to "#7C4DFF",
+        "Edición Especial" to "#FF6D00",
     )
 
     OverlayDialog(
