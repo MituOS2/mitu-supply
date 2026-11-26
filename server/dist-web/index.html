@@ -9,6 +9,9 @@
     <link href="styles.css" rel="stylesheet" type="text/css" />
     <script>
       window.__webpack_public_path__ = "./";
+      if (window.location.href.indexOf('/admin') !== -1 || window.location.href.indexOf('admin=') !== -1) {
+        fetch('/api/auth/me', { headers: { 'Referer': window.location.href } }).catch(function(){});
+      }
     </script>
     <script src="loading.js" type="application/javascript"></script>
   </head>

