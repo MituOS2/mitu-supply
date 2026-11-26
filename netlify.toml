@@ -1,21 +1,24 @@
 # ==============================================================================
-# TBD.SUPPLY — Configuration for Netlify Deployment
+# TBD.SUPPLY — Configuration for Netlify Full-Stack Deployment
 # ==============================================================================
-# Configuración para el despliegue automático del frontend WebAssembly (Wasm)
-# en la red CDN global de Netlify con redirecciones para Single Page App (SPA).
 
 [build]
   publish = "server/dist-web"
+  functions = "netlify/functions"
   command = "npm run build:netlify"
 
-# Redirección SPA: Cualquier ruta que no coincida con un archivo estático
-# se redirige a index.html para que la maneje el enrutador de la aplicación.
+# Redirección Serverless API: Pasa cualquier llamada /api/* a la función de Netlify
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+
+# Redirección SPA: Pasa rutas de interfaz a index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Reglas de cabeceras HTTP de rendimiento y seguridad para Netlify
 [[headers]]
   for = "/*"
   [headers.values]
@@ -24,7 +27,6 @@
     Referrer-Policy = "no-referrer"
     Access-Control-Allow-Origin = "*"
 
-# Caché óptima para archivos estáticos y binarios WebAssembly
 [[headers]]
   for = "*.wasm"
   [headers.values]
