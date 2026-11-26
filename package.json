@@ -1,0 +1,36 @@
+{
+  "name": "tbd-supply-nose",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tienda web creativa TBD.SUPPLY con UI nativa Miuix (Kotlin/Compose WebAssembly) + Node.js (>= 24) sin dependencias + SQLite",
+  "license": "MIT",
+  "author": "Enrique, Edgarvis, Leonel, Aníbal y Jhoynner (TBD.SUPPLY)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xUsoCarrusoX3/TBD-Supply.git"
+  },
+  "homepage": "https://github.com/xUsoCarrusoX3/TBD-Supply#readme",
+  "bugs": {
+    "url": "https://github.com/xUsoCarrusoX3/TBD-Supply/issues"
+  },
+  "keywords": [
+    "ecommerce",
+    "miuix",
+    "compose-multiplatform",
+    "kotlin-wasm",
+    "nodejs",
+    "sqlite",
+    "zero-dependencies",
+    "security"
+  ],
+  "scripts": {
+    "start": "node server/src/index.js",
+    "dev": "node --watch server/src/index.js",
+    "seed": "node server/src/db/runSeed.js",
+    "test": "node --test server/tests/integration.test.js server/tests/security.test.js",
+    "test:security": "node --test server/tests/security.test.js"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}
