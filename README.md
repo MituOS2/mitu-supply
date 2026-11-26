@@ -1,6 +1,6 @@
 # TBD.SUPPLY
 
-**Hardware, Drip & Objetos con Criterio** — Tienda web full-stack de alto rendimiento con interfaz nativa compilada a **WebAssembly (Kotlin / Compose Multiplatform + Miuix UI)** y backend **Node.js (>= 24) + SQLite** construido desde cero con **cero dependencias npm de terceros**.
+**Plataforma de Comercio Electrónico de Alto Rendimiento** — Solución web full-stack desarrollada con arquitectura nativa. Incorpora una interfaz de usuario reactiva compilada a **WebAssembly (Kotlin / Compose Multiplatform + Miuix UI)** y un servidor backend de alta seguridad en **Node.js (>= 24) + SQLite (WAL)**, diseñado íntegramente mediante módulos estándar del entorno de ejecución y sin dependencias externas de terceros.
 
 [![CI](https://github.com/MituOS2/mitu-supply/actions/workflows/ci.yml/badge.svg)](https://github.com/MituOS2/mitu-supply/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
