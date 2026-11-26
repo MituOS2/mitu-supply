@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Política de Seguridad
+    url: https://github.com/xUsoCarrusoX3/TBD-Supply/blob/main/SECURITY.md
+    about: Consulta cómo reportar vulnerabilidades de seguridad de forma privada y responsable.

@@ -1,0 +1,58 @@
+name: Reporte de Error (Bug)
+description: Reporta un fallo reproducible en el backend, frontend Wasm o scripts de arranque.
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Gracias por reportar un problema en **TBD.SUPPLY**. Por favor completa los campos con el mayor detalle posible.
+        Si se trata de una vulnerabilidad de seguridad, consulta primero `SECURITY.md` y no la publiques aquí.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área afectada
+      options:
+        - Backend (Node.js / SQLite / API)
+        - Frontend (Kotlin / Compose Wasm / Miuix)
+        - Scripts de arranque (iniciar.bat / iniciar.sh)
+        - Pruebas / CI
+        - Documentación
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del problema
+      description: Explica con claridad qué ocurrió y qué esperabas que sucediera.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      placeholder: |
+        1. Ejecutar '...'
+        2. Navegar a '...'
+        3. Observar el error '...'
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Entorno
+      description: Sistema operativo, versión de Node.js, JDK y navegador (si aplica).
+      placeholder: "Ej. Windows 11, Node v24.x, JDK 21, Chrome 130"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o capturas relevantes
+      description: Pega trazas de error o salida relevante (asegúrate de omitir secretos de `.env`).
+      render: shell

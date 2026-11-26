@@ -1,0 +1,35 @@
+name: Solicitud de Funcionalidad
+description: Propón una nueva característica o mejora para TBD.SUPPLY.
+title: "[feat]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema o necesidad
+      description: ¿Qué necesidad resuelve esta propuesta?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solución propuesta
+      description: Describe el comportamiento esperado (UI, endpoints API, esquema SQLite, etc.).
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: ¿Evaluaste otras formas de abordarlo manteniendo cero dependencias npm en backend?
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Consideraciones técnicas
+      options:
+        - label: Mantiene el backend sin dependencias npm de terceros
+        - label: Requiere cambios en el esquema SQLite o nuevos endpoints API
+        - label: Requiere cambios en la UI de Kotlin/Compose Miuix

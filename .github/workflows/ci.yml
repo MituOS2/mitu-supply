@@ -1,0 +1,51 @@
+# ==============================================================================
+# TBD.SUPPLY — Continuous Integration (CI) Workflow
+# ==============================================================================
+# Este flujo de trabajo automatizado se ejecuta en cada push o pull request
+# enviado a la rama principal (main). Garantiza que las pruebas de integración
+# y seguridad pasen correctamente con la versión requerida de Node.js (>= 24).
+
+name: Integración Continua (CI)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Permisos mínimos de lectura por seguridad (Principio de menor privilegio)
+permissions:
+  contents: read
+
+# Cancela ejecuciones anteriores si se sube un nuevo commit a la misma rama
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-tests:
+    name: Pruebas Backend y Seguridad (Node.js ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [24]
+
+    steps:
+      # 1. Obtener el código fuente del repositorio
+      - name: 📥 Descargar código fuente
+        uses: actions/checkout@v4
+
+      # 2. Configurar el entorno Node.js v24 (Requerido para node:sqlite nativo)
+      - name: ⚙️ Configurar Node.js v${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # 3. Verificar la versión instalada de Node.js
+      - name: 🔍 Verificar versión de Node.js
+        run: node -v
+
+      # 4. Ejecutar la suite de pruebas automatizadas (Integración y Seguridad)
+      - name: 🧪 Ejecutar pruebas unitarias, de integración y seguridad
+        run: npm test
