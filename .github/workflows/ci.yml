@@ -69,7 +69,7 @@ jobs:
 
       # Paso 3: Configurar caché de Gradle para acelerar builds subsiguientes
       - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
 
       # Paso 4: Clonar la dependencia del framework UI Miuix
       - name: Clone Miuix UI framework
