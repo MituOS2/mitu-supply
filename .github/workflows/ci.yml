@@ -2,8 +2,8 @@
 # TBD.SUPPLY — Continuous Integration (CI) Workflow
 # ==============================================================================
 # Este flujo de trabajo automatizado se ejecuta en cada push o pull request
-# enviado a la rama principal (main). Garantiza que las pruebas de integración
-# y seguridad pasen correctamente con la versión requerida de Node.js (>= 24).
+# enviado a la rama principal (main). Garantiza la validación de sintaxis (LINT),
+# verificación de compilación (BUILD) y ejecución de pruebas (TEST).
 
 name: Integración Continua (CI)
 
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   backend-tests:
-    name: Pruebas Backend y Seguridad (Node.js ${{ matrix.node-version }})
+    name: Integración Continua (Node.js ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -42,10 +42,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # 3. Verificar la versión instalada de Node.js
-      - name: 🔍 Verificar versión de Node.js
-        run: node -v
+      # 3. LINT: Verificación de sintaxis y calidad de código (Sin dependencias npm)
+      - name: 🧹 [LINT] Verificación estática de sintaxis JavaScript
+        run: |
+          node --check server/src/index.js
+          node --check server/src/app.js
+          node --check server/src/config.js
 
-      # 4. Ejecutar la suite de pruebas automatizadas (Integración y Seguridad)
-      - name: 🧪 Ejecutar pruebas unitarias, de integración y seguridad
+      # 4. BUILD: Verificación de compilación y artefactos estáticos
+      - name: 🏗️ [BUILD] Verificación del paquete WebAssembly de la tienda
+        run: |
+          node -e "if (!require('fs').existsSync('server/dist-web/index.html')) { console.error('Falta index.html en dist-web'); process.exit(1); }"
+          node -e "if (!require('fs').existsSync('server/dist-web/composeApp.js')) { console.error('Falta composeApp.js en dist-web'); process.exit(1); }"
+
+      # 5. TEST: Ejecución de la suite completa de pruebas (Integración y Seguridad)
+      - name: 🧪 [TEST] Ejecutar pruebas unitarias, de integración y seguridad
         run: npm test
